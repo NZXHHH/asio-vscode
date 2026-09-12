@@ -2,7 +2,10 @@
 #include"MsgNode.h"
 #include"Session.h"
 #include"Singleton.h"
-#define SHOW 100
+#include <json/json.h>
+#include <json/value.h>
+#include <json/reader.h>
+#define SHOW 1001
 class LogicNode
 {
 public:

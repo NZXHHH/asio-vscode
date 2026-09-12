@@ -9,7 +9,8 @@ using  boost::asio::ip::tcp;
 #include <queue>
 #include<map>
 #include"const.h"
-class CSession;
+#include"AsioIOServicePool.h"
+#include"Session.h"
 class CServer
 {
 public:

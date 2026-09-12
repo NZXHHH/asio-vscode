@@ -37,8 +37,10 @@ class SendNode :public MsgNode {
 public:
 	SendNode(char*buf,short max_len, short msg_id) :MsgNode(max_len + HEAD_TOTAL_LEN), _msg_id(msg_id)
 	{
-		memcpy(_data, &msg_id, HEAD_ID_LEN);
-		memcpy(_data + HEAD_ID_LEN, &max_len, HEAD_DATA_LEN);
+		short msgid_net = boost::asio::detail::socket_ops::host_to_network_short(msg_id);
+		short len_net = boost::asio::detail::socket_ops::host_to_network_short(max_len);
+		memcpy(_data, &msgid_net, HEAD_ID_LEN);
+		memcpy(_data + HEAD_ID_LEN, &len_net, HEAD_DATA_LEN);
 		memcpy(_data + HEAD_TOTAL_LEN, buf, max_len);
 	}
 	short _msg_id;

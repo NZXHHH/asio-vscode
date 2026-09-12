@@ -26,6 +26,23 @@ else()
     find_package(Boost QUIET)
 endif()
 
+set(JSON_ROOT "D:/cppsoft/libjson" CACHE PATH "JsonCpp root directory")
+if(EXISTS "${JSON_ROOT}")
+    set(JSON_INCLUDE_DIR "${JSON_ROOT}/include")
+    set(JSON_LIBRARY_DIR "${JSON_ROOT}/lib")
+    include_directories(${JSON_INCLUDE_DIR})
+    link_directories(${JSON_LIBRARY_DIR})
+    message(STATUS "Found JsonCpp at: ${JSON_ROOT}")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(JSON_LIBRARY "json_vc71_libmtd")
+    else()
+        set(JSON_LIBRARY "json_vc71_libmt")
+    endif()
+else()
+    message(WARNING "JsonCpp not found at ${JSON_ROOT}")
+    set(JSON_LIBRARY "")
+endif()
+
 file(GLOB CLIENT_SOURCES CONFIGURE_DEPENDS
     "client/*.cpp"
     "client/*.h"
@@ -33,8 +50,13 @@ file(GLOB CLIENT_SOURCES CONFIGURE_DEPENDS
 
 add_executable(server
     ${CLIENT_SOURCES}
+    client/AsioIOServicePool.h
+    client/AsioIOServicePool.cpp
 )
 target_include_directories(server PRIVATE ${CMAKE_SOURCE_DIR}/client)
 if(WIN32)
     target_link_libraries(server PRIVATE ws2_32)
+endif()
+if(JSON_LIBRARY)
+    target_link_libraries(server PRIVATE ${JSON_LIBRARY})
 endif()

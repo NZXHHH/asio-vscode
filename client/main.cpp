@@ -7,15 +7,18 @@
 int main()
 {
 	try {
-		
-		boost::asio::io_context ioc;
-		
-		CServer s(ioc, 10086);
-		std::cout<<"Server is running on port 10086"<<std::endl;
-		ioc.run();
+		auto pool = AsioIOServicePool::GetInstance();
+		boost::asio::io_context  io_context;
+		boost::asio::signal_set signals(io_context, SIGINT, SIGTERM);
+		signals.async_wait([&io_context,pool](auto, auto) {
+			io_context.stop();
+			pool->Stop();
+			});
+		CServer s(io_context, 10086);
+		io_context.run();
 	}
 	catch (std::exception& e) {
-		std::cerr << "Exception: " << e.what() << "\n";
+		std::cerr << "Exception: " << e.what() << endl;
 	}
-	return 0;
+
 }
