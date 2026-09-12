@@ -7,6 +7,7 @@ template <typename T>
 class Singleton
 {
 	friend class LogicSystem;
+	friend class AsioIOServicePool;
 private:
 	Singleton() = default;
 	Singleton<T>& operator=(const Singleton<T>& s) = delete;
@@ -15,12 +16,10 @@ private:
 public:
 	static std::shared_ptr<T> GetInstance()
 	{
-		std::once_flag s_flag;
+		static std::once_flag s_flag;
 		std::call_once(s_flag, [&]()
 			{
-				//_instance = make_shared<T>();
 				_instance = std::shared_ptr<T>(new T);
-				return _instance;
 			});
 		return _instance;
 	}

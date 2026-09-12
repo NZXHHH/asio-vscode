@@ -1,3 +1,4 @@
+#include "CServer.h"
 #include "LogicSystem.h"
 CSession::CSession(boost::asio::io_context& ios, CServer* server) :_soc(ios), _server(server) {
 	boost::uuids::uuid  a_uuid = boost::uuids::random_generator()();
@@ -40,7 +41,9 @@ void CSession::handle_read(boost::system::error_code error, std::size_t tranfere
 		short body_len;
 		memcpy(&msg_id, _head_node->_data, HEAD_ID_LEN);
 		memcpy(&body_len, _head_node->_data+ HEAD_ID_LEN, HEAD_DATA_LEN);
-		if (body_len > MAX_LENGTH)
+		msg_id = boost::asio::detail::socket_ops::network_to_host_short(msg_id);
+		body_len = boost::asio::detail::socket_ops::network_to_host_short(body_len);
+		if (body_len > MAX_LENGTH || body_len <= 0)
 		{
 			_server->ClearSession(session->GetUuid());
 			return;
@@ -90,11 +93,3 @@ std::string& CSession::GetUuid()
 {
 	return _uuid;
 }
-
-
-
-
-
-
-
-

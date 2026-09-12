@@ -8,7 +8,6 @@ using namespace std;
 using  boost::asio::ip::tcp;
 #include <queue>
 #include<map>
-#include"CServer.h"
 #include"MsgNode.h"
 #include"const.h"
 class CServer;
@@ -34,5 +33,3 @@ private:
 	shared_ptr<MsgNode>_head_node;
 	shared_ptr<RecvNode>_recv_msg_node;
 };
-
-

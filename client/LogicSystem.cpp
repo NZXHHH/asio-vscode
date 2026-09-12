@@ -41,14 +41,24 @@ void LogicSystem::RegisterCallBack()
 
 void LogicSystem::ShowCallBack(shared_ptr<CSession> _session, short msg_id, string data)
 {
-
+	// 将接收到的消息原封不动地传回去
+	//_session->send((char*)data.data(), static_cast<int>(data.length()), msg_id);
+	Json::Reader reader;
+	Json::Value root;
+	reader.parse(data, root);
+	std::cout << "recevie msg id  is " << root["id"].asInt() << " msg data is "
+		<< root["data"].asString() << endl;
+	root["data"] = "server has received msg, msg data is " + root["data"].asString();
+	std::string return_str = root.toStyledString();
+	_session->send((char*)return_str.data(), static_cast<int>(return_str.length()), root["id"].asInt());
 }
 
 void LogicSystem::DealMsg()
 {
-	std::unique_lock<std::mutex> loc(_mutex);
+	
 	while (1)
 	{
+		std::unique_lock<std::mutex> loc(_mutex);
 		//使用if，因为唤醒之后要再次通过while再次判断，以防虚假唤醒
 		while (_que.empty() && !_b_stop) {
 			_consume.wait(loc);
